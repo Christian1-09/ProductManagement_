@@ -1,0 +1,26 @@
+﻿<Router AppAssembly="typeof(App).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Components.Layout.MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+            <Authorizing>
+                <div class="flex items-center justify-center min-h-screen"
+                     style="background:#04083A;">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2"
+                         style="border-color:#53CBF3;"></div>
+                </div>
+            </Authorizing>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(Components.Layout.MainLayout)">
+            <div class="flex flex-col items-center justify-center h-64 gap-4">
+                <p class="text-4xl font-bold" style="color:#53CBF3;">404</p>
+                <p style="color:#9ca3af;">Page not found.</p>
+                <a href="/" style="color:#53CBF3;" class="hover:underline text-sm">← Go to Dashboard</a>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

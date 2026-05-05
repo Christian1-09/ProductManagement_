@@ -1,0 +1,224 @@
+﻿@* Components/Pages/Register.razor *@
+@page "/register"
+@layout EmptyLayout
+@rendermode InteractiveServer
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<PageTitle>Register — Product Management</PageTitle>
+
+<div class="min-h-screen flex items-center justify-center p-4"
+     style="background:linear-gradient(135deg,#04083A 0%,#07104A 100%);">
+
+    <div class="flex w-full rounded-lg border shadow-2xl overflow-hidden"
+         style="max-width:860px; border-color:#1E2A78;">
+
+        <!-- ── LEFT PANEL ───────────────────────────────────── -->
+        <div class="flex flex-col items-center justify-center text-center p-10 border-r"
+             style="width:42%; background:#0A0F3C; border-color:#1E2A78;">
+
+            <h1 class="font-semibold tracking-widest text-white mb-3"
+                style="font-family:serif; font-size:1.15rem;">
+                Product Management
+            </h1>
+            <p class="mb-8" style="color:#53CBF3; font-size:1rem;">Welcome back Pretty boy!</p>
+
+            <div class="relative flex items-center justify-center mb-5"
+                 style="width:90px;height:90px;">
+                <svg viewBox="0 0 100 115" style="width:100%;height:100%;fill:#53CBF3;">
+                    <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+                </svg>
+                <span class="absolute font-bold"
+                      style="font-size:30px;color:#04083A;font-family:serif;">C</span>
+            </div>
+
+            <p class="font-semibold" style="color:#53CBF3;font-family:serif;">Christian</p>
+        </div>
+
+        <!-- ── RIGHT PANEL ──────────────────────────────────── -->
+        <div class="flex flex-col justify-center p-10" style="flex:1; background:#0A0F3C;">
+
+            <h2 class="text-center font-semibold mb-6"
+                style="color:#53CBF3; font-size:1.75rem;">
+                Create Account
+            </h2>
+
+            @if (!string.IsNullOrEmpty(_message))
+            {
+                <div class="mb-4 p-3 rounded-md text-sm"
+                     style="@(_isError
+                                              ? "background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;"
+                                              : "background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);color:#34d399;")">
+                    @_message
+                </div>
+            }
+
+            <EditForm Model="_form" OnValidSubmit="HandleRegister">
+                <DataAnnotationsValidator />
+
+                <!-- First Name -->
+                <div class="mb-4">
+                    <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">First Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                              style="color:#53CBF3;">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 9a7 7 0 1114 0H3z" />
+                            </svg>
+                        </span>
+                        <InputText @bind-Value="_form.FirstName"
+                                   placeholder="Enter full name"
+                                   class="w-full text-sm text-white rounded-md"
+                                   style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;" />
+                    </div>
+                    <ValidationMessage For="@(() => _form.FirstName)"
+                                       class="text-xs mt-1" style="color:#f87171;" />
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                              style="color:#53CBF3;">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                        </span>
+                        <InputText @bind-Value="_form.Username"
+                                   type="email"
+                                   placeholder="Enter full name"
+                                   class="w-full text-sm text-white rounded-md"
+                                   style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;" />
+                    </div>
+                    <ValidationMessage For="@(() => _form.Username)"
+                                       class="text-xs mt-1" style="color:#f87171;" />
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                              style="color:#53CBF3;">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                      clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <InputText @bind-Value="_form.Password"
+                                   type="password"
+                                   placeholder="Enter full name"
+                                   class="w-full text-sm text-white rounded-md"
+                                   style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;" />
+                    </div>
+                    <ValidationMessage For="@(() => _form.Password)"
+                                       class="text-xs mt-1" style="color:#f87171;" />
+                </div>
+
+                <!-- Role -->
+                <div class="mb-6">
+                    <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Role</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                              style="color:#53CBF3;">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                            </svg>
+                        </span>
+                        <InputSelect @bind-Value="_form.Role"
+                                     class="w-full text-sm rounded-md appearance-none"
+                                     style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;color:#9ca3af;">
+                            <option value="@Roles.User">User</option>
+                            <option value="@Roles.Admin">Admin</option>
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                        disabled="@_loading"
+                        class="w-full py-3 rounded-md font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50"
+                        style="background:#53CBF3;color:#04083A;border:none;cursor:pointer;">
+                    @if (_loading)
+                    {
+                        <span class="flex items-center justify-center gap-2">
+                            <div class="animate-spin rounded-full h-4 w-4 border-b-2"
+                                 style="border-color:#04083A;"></div>
+                            Creating...
+                        </span>
+                    }
+                    else
+                    {
+                        <span>Create Account</span>
+                    }
+                </button>
+            </EditForm>
+
+            <p class="text-center text-sm mt-5" style="color:white;">
+                Already have an account?&nbsp;
+                <a href="/login" style="color:#53CBF3;" class="font-semibold hover:underline">
+                    Login
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private RegisterForm _form = new();
+    private string _message = "";
+    private bool _isError = false;
+    private bool _loading = false;
+
+    private async Task HandleRegister()
+    {
+        _loading = true;
+        _isError = false;
+        _message = "";
+
+        try
+        {
+            await UserService.RegisterAsync(new UserAccount
+            {
+                FirstName = _form.FirstName,
+                Username = _form.Username,
+                Password = _form.Password,
+                Role = _form.Role
+            });
+
+            _message = "Account created! Redirecting to login...";
+            await Task.Delay(1500);
+            Navigation.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            _isError = true;
+            _message = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+
+    public class RegisterForm
+    {
+        [Required(ErrorMessage = "First name is required")]
+        public string FirstName { get; set; } = "";
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Username { get; set; } = "";
+
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 6,
+            ErrorMessage = "Password must be at least 6 characters")]
+        public string Password { get; set; } = "";
+
+        public Roles Role { get; set; } = Roles.User;
+    }
+}

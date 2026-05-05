@@ -1,0 +1,415 @@
+﻿@* Components/Pages/Products.razor *@
+@page "/products"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject IProductService  ProductService
+@inject ICategoryService CategoryService
+@inject IBrandService    BrandService
+@inject ISupplierService SupplierService
+
+
+
+<PageTitle>Products — Product Management</PageTitle>
+
+<!-- Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+    <p class="text-sm" style="color:#9ca3af;">Manage your product inventory</p>
+    <AuthorizeView Roles="Admin">
+        <Authorized Context="adminCtx">
+            <button @onclick="OpenAdd"
+                    class="flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all hover:opacity-90"
+                    style="background:#53CBF3;color:#04083A;border:none;cursor:pointer;">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Product
+            </button>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+<!-- Search + Filter -->
+<div class="flex flex-wrap gap-3 mb-5">
+    <div class="relative" style="flex:1;min-width:200px;">
+        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none" style="color:#53CBF3;">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+            </svg>
+        </span>
+        <input type="text"
+               value="@_search"
+               @oninput="e => { _search = e.Value?.ToString() ?? string.Empty; ApplyFilter(); }"
+               placeholder="Search products, SKU..."
+               class="w-full text-sm text-white rounded-md"
+               style="background:#0A0F3C;border:1px solid #1E2A78;padding:8px 12px 8px 32px;outline:none;" />
+    </div>
+    <select @onchange="OnCategoryFilterChanged"
+            class="text-sm rounded-md px-3 py-2"
+            style="background:#0A0F3C;border:1px solid #1E2A78;color:#9ca3af;outline:none;min-width:160px;">
+        <option value="0">All Categories</option>
+        @foreach (var c in _categories)
+        {
+            <option value="@c.Id">@c.Name</option>
+        }
+    </select>
+</div>
+
+<!-- Table -->
+<div class="rounded-lg border overflow-hidden" style="background:#0A0F3C;border-color:#1E2A78;">
+    @if (_loading)
+    {
+        <div class="flex justify-center py-16">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color:#53CBF3;"></div>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr style="background:#07104A;">
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Name</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">SKU</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Category</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Brand</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Supplier</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Price</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Stock</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Status</th>
+                        <AuthorizeView Roles="Admin">
+                            <Authorized Context="hdrCtx">
+                                <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Actions</th>
+                            </Authorized>
+                        </AuthorizeView>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!_filtered.Any())
+                    {
+                        <tr><td colspan="9" class="px-5 py-10 text-center" style="color:#6b7280;">No products found.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var p in _filtered)
+                        {
+                            <tr class="border-t transition-colors hover:bg-white/[0.03]" style="border-color:#1E2A78;">
+                                <td class="px-4 py-3 text-white font-medium">@p.Name</td>
+                                <td class="px-4 py-3" style="color:#6b7280;">@(p.SKU ?? "—")</td>
+                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
+                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
+                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Supplier?.Name ?? "—")</td>
+                                <td class="px-4 py-3 font-semibold" style="color:#53CBF3;">₱@p.Price.ToString("N2")</td>
+                                <td class="px-4 py-3 text-white">@p.Stock</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 rounded-full font-semibold"
+                                          style="@(p.IsActive ? "background:rgba(52,211,153,0.12);color:#34d399;" : "background:rgba(239,68,68,0.12);color:#f87171;")">
+                                        @(p.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <AuthorizeView Roles="Admin">
+                                    <Authorized Context="rowCtx">
+                                        <td class="px-4 py-3">
+                                            <div class="flex gap-2">
+                                                <button @onclick="() => OpenEdit(p)"
+                                                        class="px-2 py-1 rounded text-xs font-semibold border transition-all hover:bg-white/10"
+                                                        style="border-color:#53CBF3;color:#53CBF3;background:transparent;cursor:pointer;">
+                                                    Edit
+                                                </button>
+                                                <button @onclick="() => AskDelete(p.Id, p.Name)"
+                                                        class="px-2 py-1 rounded text-xs font-semibold border transition-all hover:bg-red-900/20"
+                                                        style="border-color:#f87171;color:#f87171;background:transparent;cursor:pointer;">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </Authorized>
+                                </AuthorizeView>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-2 border-t text-xs" style="border-color:#1E2A78;color:#4b5563;">
+            Showing @_filtered.Count of @_all.Count products
+        </div>
+    }
+</div>
+
+<!-- Add / Edit Modal -->
+@if (_showModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="background:rgba(0,0,0,0.75);">
+        <div class="w-full rounded-lg border shadow-2xl overflow-y-auto"
+             style="max-width:520px;max-height:90vh;background:#0A0F3C;border-color:#1E2A78;">
+
+            <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:#1E2A78;">
+                <h3 class="text-white font-semibold text-sm">
+                    @(_isEditing ? "Edit Product" : "Add New Product")
+                </h3>
+                <button @onclick="CloseModal" style="color:#9ca3af;background:none;border:none;cursor:pointer;font-size:16px;">✕</button>
+            </div>
+
+            <EditForm Model="_form" OnValidSubmit="SaveProduct" class="p-5">
+                <DataAnnotationsValidator />
+                @if (!string.IsNullOrEmpty(_modalError))
+                {
+                    <div class="mb-4 p-3 rounded-md text-xs"
+                         style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;">
+                        @_modalError
+                    </div>
+                }
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Product Name *</label>
+                        <InputText @bind-Value="_form.Name" placeholder="Enter product name"
+                                   class="w-full text-sm text-white rounded-md"
+                                   style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;outline:none;" />
+                        <ValidationMessage For="@(() => _form.Name)" class="text-xs mt-1" style="color:#f87171;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">SKU</label>
+                        <InputText @bind-Value="_form.SKU" placeholder="e.g. PRD-001"
+                                   class="w-full text-sm text-white rounded-md"
+                                   style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;outline:none;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Price (₱) *</label>
+                        <InputNumber @bind-Value="_form.Price" placeholder="0.00"
+                                     class="w-full text-sm text-white rounded-md"
+                                     style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;outline:none;" />
+                        <ValidationMessage For="@(() => _form.Price)" class="text-xs mt-1" style="color:#f87171;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Stock</label>
+                        <InputNumber @bind-Value="_form.Stock" placeholder="0"
+                                     class="w-full text-sm text-white rounded-md"
+                                     style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;outline:none;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Category *</label>
+                        <InputSelect @bind-Value="_form.CategoryId"
+                                     class="w-full text-sm rounded-md"
+                                     style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;color:#9ca3af;outline:none;">
+                            <option value="0">Select Category</option>
+                            @foreach (var c in _categories)
+                            { <option value="@c.Id">@c.Name</option> }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => _form.CategoryId)" class="text-xs mt-1" style="color:#f87171;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Brand *</label>
+                        <InputSelect @bind-Value="_form.BrandId"
+                                     class="w-full text-sm rounded-md"
+                                     style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;color:#9ca3af;outline:none;">
+                            <option value="0">Select Brand</option>
+                            @foreach (var b in _brands)
+                            { <option value="@b.Id">@b.Name</option> }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => _form.BrandId)" class="text-xs mt-1" style="color:#f87171;" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Supplier *</label>
+                        <InputSelect @bind-Value="_form.SupplierId"
+                                     class="w-full text-sm rounded-md"
+                                     style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;color:#9ca3af;outline:none;">
+                            <option value="0">Select Supplier</option>
+                            @foreach (var s in _suppliers)
+                            { <option value="@s.Id">@s.Name</option> }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => _form.SupplierId)" class="text-xs mt-1" style="color:#f87171;" />
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <InputCheckbox @bind-Value="_form.IsActive" class="w-4 h-4" />
+                        <label class="text-xs" style="color:#9ca3af;">Active</label>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Description</label>
+                        <InputTextArea @bind-Value="_form.Description" rows="3" placeholder="Product description"
+                                       class="w-full text-sm text-white rounded-md resize-none"
+                                       style="background:#07104A;border:1px solid #1E2A78;padding:8px 10px;outline:none;" />
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-5">
+                    <button type="button" @onclick="CloseModal"
+                            class="flex-1 py-2 rounded-md text-xs border"
+                            style="border-color:#1E2A78;color:#9ca3af;background:transparent;cursor:pointer;">
+                        Cancel
+                    </button>
+                    <button type="submit" disabled="@_saving"
+                            class="flex-1 py-2 rounded-md text-xs font-bold disabled:opacity-50 hover:opacity-90"
+                            style="background:#53CBF3;color:#04083A;border:none;cursor:pointer;">
+                        @(_saving ? "Saving..." : (_isEditing ? "Update" : "Add Product"))
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<ConfirmModal IsVisible="_showDelete"
+              Title="Delete Product"
+              Message="@($"Delete \"{_deleteName}\"? This cannot be undone.")"
+              OnConfirm="ConfirmDelete"
+              OnCancel="@(() => _showDelete = false)" />
+
+@code {
+    private List<Product>  _all        = new();
+    private List<Product>  _filtered   = new();
+    private List<Category> _categories = new();
+    private List<Brand>    _brands     = new();
+    private List<Supplier> _suppliers  = new();
+
+    private bool   _loading    = true;
+    private bool   _showModal  = false;
+    private bool   _isEditing  = false;
+    private bool   _saving     = false;
+    private bool   _showDelete = false;
+    private int    _editId, _deleteId;
+    private string _deleteName  = "";
+    private string _modalError  = "";
+    private string _search      = "";
+    private int    _catFilter   = 0;
+
+    private ProductForm _form = new();
+
+    protected override async Task OnInitializedAsync() => await LoadAll();
+
+    private async Task LoadAll()
+    {
+        _loading = true;
+        try
+        {
+            _all        = await ProductService.GetAllWithDetailsAsync();
+            _categories = await CategoryService.GetAllAsync();
+            _brands     = await BrandService.GetAllAsync();
+            _suppliers  = await SupplierService.GetAllAsync();
+            ApplyFilter();
+        }
+        finally { _loading = false; }
+    }
+
+    private void ApplyFilter() =>
+        _filtered = _all.Where(p =>
+            (string.IsNullOrEmpty(_search) ||
+             p.Name.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+             (p.SKU?.Contains(_search, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+            (_catFilter == 0 || p.CategoryId == _catFilter)).ToList();
+
+    private void OpenAdd()
+    {
+        _form       = new ProductForm { IsActive = true };
+        _isEditing  = false;
+        _modalError = "";
+        _showModal  = true;
+    }
+
+    private void OpenEdit(Product p)
+    {
+        _editId    = p.Id;
+        _form      = new ProductForm
+        {
+            Name        = p.Name,
+            Description = p.Description,
+            SKU         = p.SKU,
+            Price       = p.Price,
+            Stock       = p.Stock,
+            CategoryId  = p.CategoryId,
+            BrandId     = p.BrandId,
+            SupplierId  = p.SupplierId,
+            IsActive    = p.IsActive
+        };
+        _isEditing  = true;
+        _modalError = "";
+        _showModal  = true;
+    }
+
+    private void CloseModal() { _showModal = false; _modalError = ""; }
+
+    private async Task SaveProduct()
+    {
+        if (_form.CategoryId == 0 || _form.BrandId == 0 || _form.SupplierId == 0)
+        { _modalError = "Please select Category, Brand, and Supplier."; return; }
+
+        _saving = true;
+        try
+        {
+            if (_isEditing)
+            {
+                var e = await ProductService.GetByIdAsync(_editId);
+                if (e is not null)
+                {
+                    e.Name = _form.Name; e.Description = _form.Description;
+                    e.SKU = _form.SKU; e.Price = _form.Price; e.Stock = _form.Stock;
+                    e.CategoryId = _form.CategoryId; e.BrandId = _form.BrandId;
+                    e.SupplierId = _form.SupplierId; e.IsActive = _form.IsActive;
+                    await ProductService.UpdateAsync(e);
+                }
+            }
+            else
+            {
+                await ProductService.AddAsync(new Product
+                {
+                    Name = _form.Name, Description = _form.Description, SKU = _form.SKU,
+                    Price = _form.Price, Stock = _form.Stock, CategoryId = _form.CategoryId,
+                    BrandId = _form.BrandId, SupplierId = _form.SupplierId, IsActive = _form.IsActive
+                });
+            }
+            CloseModal();
+            await LoadAll();
+        }
+        catch (Exception ex) { _modalError = ex.Message; }
+        finally { _saving = false; }
+    }
+
+    private void AskDelete(int id, string name) { _deleteId = id; _deleteName = name; _showDelete = true; }
+
+    private async Task ConfirmDelete()
+    {
+        try { await ProductService.DeleteAsync(_deleteId); await LoadAll(); }
+        catch { }
+        finally { _showDelete = false; }
+    }
+
+    public class ProductForm
+    {
+        [Required(ErrorMessage = "Name is required")]
+        public string  Name        { get; set; } = "";
+        public string? Description { get; set; }
+        public string? SKU         { get; set; }
+
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+        public decimal Price       { get; set; }
+        public int     Stock       { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a category")]
+        public int CategoryId  { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a brand")]
+        public int BrandId     { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Select a supplier")]
+        public int SupplierId  { get; set; }
+        public bool IsActive   { get; set; } = true;
+    }
+
+    // ✅ Extracted handler — avoids nested double-quote conflict in inline lambda
+    private void OnCategoryFilterChanged(ChangeEventArgs e)
+    {
+        var raw = e.Value?.ToString() ?? "0";
+        _catFilter = int.TryParse(raw, out var parsed) ? parsed : 0;
+        ApplyFilter();
+    }
+}

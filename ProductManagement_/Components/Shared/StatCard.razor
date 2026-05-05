@@ -1,0 +1,30 @@
+﻿@* Components/Shared/StatCard.razor *@
+<a href="@Href"
+   class="block rounded-lg border p-5 transition-all duration-200 hover:scale-[1.02] cursor-pointer"
+   style="background:#0A0F3C; border-color:#1E2A78; text-decoration:none;"
+   onmouseover="this.style.borderColor='#53CBF3'" onmouseout="this.style.borderColor='#1E2A78'">
+
+    <div class="flex items-center justify-between mb-3">
+        <div class="w-11 h-11 rounded-lg flex items-center justify-center flex-shrink-0"
+             style="background:@IconBg; color:@Color;">
+            @Icon
+        </div>
+        <span class="text-3xl font-bold text-white">@Value</span>
+    </div>
+
+    <p class="text-sm font-medium mb-3" style="color:#9ca3af;">@Title</p>
+
+    <div class="h-1 rounded-full" style="background:rgba(255,255,255,0.06);">
+        <div class="h-1 rounded-full transition-all duration-500" style="width:@FillWidth%; background:@Color;"></div>
+    </div>
+</a>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "0";
+    [Parameter] public string Color { get; set; } = "#53CBF3";
+    [Parameter] public string IconBg { get; set; } = "rgba(83,203,243,0.12)";
+    [Parameter] public string Href { get; set; } = "/";
+    [Parameter] public int FillWidth { get; set; } = 60;
+    [Parameter] public RenderFragment? Icon { get; set; }
+}

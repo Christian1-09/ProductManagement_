@@ -1,0 +1,43 @@
+﻿@* Components/Shared/ConfirmModal.razor *@
+@if (IsVisible)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="background:rgba(0,0,0,0.75);">
+        <div class="w-full max-w-sm rounded-lg border shadow-2xl p-6 text-center"
+             style="background:#0A0F3C; border-color:#1E2A78;">
+
+            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+                 style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25);">
+                <svg class="w-7 h-7" fill="none" stroke="#f87171" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+
+            <h3 class="text-white font-semibold text-base mb-2">@Title</h3>
+            <p class="text-sm mb-6" style="color:#9ca3af;">@Message</p>
+
+            <div class="flex gap-3">
+                <button @onclick="OnCancel"
+                        class="flex-1 py-2 rounded-md text-sm font-medium border transition-all hover:bg-white/5"
+                        style="border-color:#1E2A78; color:#9ca3af; background:transparent;">
+                    Cancel
+                </button>
+                <button @onclick="OnConfirm"
+                        class="flex-1 py-2 rounded-md text-sm font-semibold transition-all hover:opacity-90"
+                        style="background:#ef4444; color:white; border:none;">
+                    @ConfirmText
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Title { get; set; } = "Confirm Delete";
+    [Parameter] public string Message { get; set; } = "This action cannot be undone.";
+    [Parameter] public string ConfirmText { get; set; } = "Delete";
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}

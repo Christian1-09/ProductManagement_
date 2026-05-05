@@ -1,0 +1,172 @@
+﻿@* Components/Pages/Login.razor *@
+@page "/login"
+@layout EmptyLayout
+@rendermode InteractiveServer
+@inject IUserService UserService
+@inject AuthStateProvider AuthProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Login — Product Management</PageTitle>
+
+<div class="min-h-screen flex items-center justify-center p-4"
+     style="background:linear-gradient(135deg,#04083A 0%,#07104A 100%);">
+
+    <div class="flex w-full rounded-lg border shadow-2xl overflow-hidden"
+         style="max-width:860px; border-color:#1E2A78;">
+
+        <!-- ── LEFT PANEL ───────────────────────────────────── -->
+        <div class="flex flex-col items-center justify-center text-center p-10 border-r"
+             style="width:42%; background:#0A0F3C; border-color:#1E2A78;">
+
+            <h1 class="font-semibold tracking-widest text-white mb-3"
+                style="font-family:serif; font-size:1.15rem;">
+                Product Management
+            </h1>
+            <p class="mb-8" style="color:#53CBF3; font-size:1rem;">Welcome back Pretty boy!</p>
+
+            <div class="relative flex items-center justify-center mb-5"
+                 style="width:90px; height:90px;">
+                <svg viewBox="0 0 100 115" style="width:100%;height:100%;fill:#53CBF3;">
+                    <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+                </svg>
+                <span class="absolute font-bold"
+                      style="font-size:30px;color:#04083A;font-family:serif;">C</span>
+            </div>
+
+            <p class="font-semibold" style="color:#53CBF3;font-family:serif;">Christian</p>
+        </div>
+
+        <!-- ── RIGHT PANEL ──────────────────────────────────── -->
+        <div class="flex flex-col justify-center p-10" style="flex:1; background:#0A0F3C;">
+
+            <h2 class="text-center font-semibold mb-7"
+                style="color:#53CBF3; font-size:1.75rem;">
+                Login
+            </h2>
+
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <div class="mb-5 p-3 rounded-md text-sm"
+                     style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;">
+                    @_error
+                </div>
+            }
+
+            <!-- Email -->
+            <div class="mb-4">
+                <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Email</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                          style="color:#53CBF3;">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                    </span>
+                    <input type="email"
+                           @bind="_email"
+                           placeholder="Enter full name"
+                           class="w-full text-sm text-white rounded-md"
+                           style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;"
+                           @onkeydown="OnKeyDown" />
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-6">
+                <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Password</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none"
+                          style="color:#53CBF3;">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                  clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <input type="password"
+                           @bind="_password"
+                           placeholder="Enter full name"
+                           class="w-full text-sm text-white rounded-md"
+                           style="background:transparent;border:1px solid #1E2A78;padding:10px 12px 10px 36px;outline:none;"
+                           @onkeydown="OnKeyDown" />
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button @onclick="HandleLogin"
+                    disabled="@_loading"
+                    class="w-full py-3 rounded-md font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50"
+                    style="background:#53CBF3;color:#04083A;border:none;cursor:pointer;">
+                @if (_loading)
+                {
+                    <span class="flex items-center justify-center gap-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2"
+                             style="border-color:#04083A;"></div>
+                        Logging in...
+                    </span>
+                }
+                else
+                {
+                    <span>Login</span>
+                }
+            </button>
+
+            <p class="text-center text-sm mt-5" style="color:white;">
+                Already have an account?&nbsp;
+                <a href="/register" style="color:#53CBF3;" class="font-semibold hover:underline">
+                    Register
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _email = "";
+    private string _password = "";
+    private string _error = "";
+    private bool _loading = false;
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await HandleLogin();
+    }
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(_email) || string.IsNullOrWhiteSpace(_password))
+        {
+            _error = "Please enter your email and password.";
+            return;
+        }
+
+        _loading = true;
+        _error = "";
+
+        try
+        {
+            var user = await UserService.LoginAsync(_email.Trim(), _password);
+
+            if (user is null)
+            {
+                _error = "Invalid email or password.";
+                return;
+            }
+
+            AuthProvider.SetUser(user.Username, user.Role);
+
+            // ✅ NO forceLoad — stay on the same circuit so in-memory state is preserved
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            _error = "Login failed: " + ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,198 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@* Components/Layout/MainLayout.razor *@
+@inherits LayoutComponentBase
+@inject AuthStateProvider AuthProvider
+@inject NavigationManager Navigation
+
+<div class="flex h-screen overflow-hidden"
+     style="background:linear-gradient(135deg,#04083A 0%,#07104A 100%);">
+
+    <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+    <aside class="flex flex-col flex-shrink-0 border-r"
+           style="width:240px; background:#0A0F3C; border-color:#1E2A78;">
+
+        <!-- Brand Logo -->
+        <div class="flex flex-col items-center py-7 border-b" style="border-color:#1E2A78;">
+            <div class="relative flex items-center justify-center mb-3" style="width:52px;height:52px;">
+                <svg viewBox="0 0 100 115" style="width:100%;height:100%;fill:#53CBF3;">
+                    <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+                </svg>
+                <span class="absolute font-bold" style="font-size:22px;color:#04083A;font-family:serif;">E</span>
+            </div>
+            <span class="font-semibold text-white tracking-widest uppercase text-xs" style="font-family:serif;">
+                Product Management
+            </span>
+        </div>
+
+        <!-- Logged-in User Chip -->
+        <AuthorizeView>
+            <Authorized Context="sidebarAuth">
+                <div class="flex items-center gap-3 px-4 py-3 border-b" style="border-color:#1E2A78;">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                         style="background:#53CBF3;color:#04083A;">
+                        @(sidebarAuth.User.Identity?.Name?.Substring(0,1).ToUpper() ?? "?")
+                    </div>
+                    <div style="overflow:hidden;">
+                        <p class="text-xs font-semibold text-white truncate">
+                            @sidebarAuth.User.Identity?.Name
+                        </p>
+                        <p class="text-xs" style="color:#53CBF3;">
+                            @(sidebarAuth.User.IsInRole("Admin") ? "Administrator" : "User")
+                        </p>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto px-3 py-3" style="display:flex;flex-direction:column;gap:2px;">
+
+            <NavLink href="/"
+                     Match="NavLinkMatch.All"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     style="color:#9ca3af;border-left:3px solid transparent;"
+                     ActiveClass="nav-link-active">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </NavLink>
+
+            <NavLink href="/products"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     style="color:#9ca3af;border-left:3px solid transparent;"
+                     ActiveClass="nav-link-active">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                Products
+            </NavLink>
+
+            <NavLink href="/categories"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     style="color:#9ca3af;border-left:3px solid transparent;"
+                     ActiveClass="nav-link-active">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Categories
+            </NavLink>
+
+            <NavLink href="/brands"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     style="color:#9ca3af;border-left:3px solid transparent;"
+                     ActiveClass="nav-link-active">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+                Brands
+            </NavLink>
+
+            <NavLink href="/suppliers"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     style="color:#9ca3af;border-left:3px solid transparent;"
+                     ActiveClass="nav-link-active">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                Suppliers
+            </NavLink>
+
+            <!-- Admin-only section -->
+            <AuthorizeView Roles="Admin">
+                <Authorized Context="adminNav">
+                    <div class="px-3 pt-4 pb-1">
+                        <p class="text-xs font-semibold uppercase tracking-widest" style="color:#2d3a7a;">
+                            Admin
+                        </p>
+                    </div>
+                    <NavLink href="/users"
+                             class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                             style="color:#9ca3af;border-left:3px solid transparent;"
+                             ActiveClass="nav-link-active">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        Users
+                    </NavLink>
+                </Authorized>
+            </AuthorizeView>
+
+        </nav>
+
+        <!-- Logout Button -->
+        <div class="p-3 border-t" style="border-color:#1E2A78;">
+            <button @onclick="Logout"
+                    class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all hover:opacity-80"
+                    style="color:#f87171;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════ MAIN AREA ═══════════════════════════ -->
+    <div class="flex flex-col flex-1 overflow-hidden">
+
+        <!-- Topbar -->
+        <header class="flex items-center justify-between px-6 py-3 flex-shrink-0 border-b"
+                style="background:#0A0F3C; border-color:#1E2A78; min-height:60px;">
+            <div>
+                <h2 class="text-white font-semibold text-base">@GetPageTitle()</h2>
+                <p class="text-xs" style="color:#53CBF3;">@DateTime.Now.ToString("dddd, MMMM dd yyyy")</p>
+            </div>
+            <AuthorizeView>
+                <Authorized Context="topbarAuth">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm" style="color:#6b7280;">Welcome,</span>
+                        <span class="text-sm font-semibold" style="color:#53CBF3;">
+                            @topbarAuth.User.Identity?.Name
+                        </span>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
+                             style="background:#53CBF3;color:#04083A;">
+                            @(topbarAuth.User.Identity?.Name?.Substring(0,1).ToUpper() ?? "?")
+                        </div>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+    private async Task Logout()
+    {
+        AuthProvider.ClearUser();
+
+        Navigation.NavigateTo("/login");
+    }
+
+    private string GetPageTitle()
+    {
+        var path = "/" + Navigation.ToBaseRelativePath(Navigation.Uri).Split('?')[0].TrimStart('/');
+        return path switch
+        {
+            "/"           => "Dashboard",
+            "/products"   => "Products",
+            "/categories" => "Categories",
+            "/brands"     => "Brands",
+            "/suppliers"  => "Suppliers",
+            "/users"      => "Users",
+            _             => "Product Management"
+        };
+    }
+}

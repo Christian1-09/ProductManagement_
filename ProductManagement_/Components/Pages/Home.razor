@@ -1,0 +1,158 @@
+﻿@* Components/Pages/Home.razor *@
+@page "/"
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject IProductService  ProductService
+@inject ICategoryService CategoryService
+@inject IBrandService    BrandService
+@inject ISupplierService SupplierService
+
+<PageTitle>Dashboard — Product Management</PageTitle>
+
+@if (_loading)
+{
+    <div class="flex items-center justify-center h-64">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2"
+             style="border-color:#53CBF3;"></div>
+    </div>
+}
+else
+{
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-5 mb-7">
+
+        <StatCard Title="Total Products" Value="@_products.Count.ToString()"
+                  Color="#53CBF3" IconBg="rgba(83,203,243,0.12)"
+                  Href="/products" FillWidth="65">
+            <Icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </Icon>
+        </StatCard>
+
+        <StatCard Title="Categories" Value="@_categoryCount.ToString()"
+                  Color="#a78bfa" IconBg="rgba(167,139,250,0.12)"
+                  Href="/categories" FillWidth="45">
+            <Icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+            </Icon>
+        </StatCard>
+
+        <StatCard Title="Brands" Value="@_brandCount.ToString()"
+                  Color="#34d399" IconBg="rgba(52,211,153,0.12)"
+                  Href="/brands" FillWidth="55">
+            <Icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"/>
+                </svg>
+            </Icon>
+        </StatCard>
+
+        <StatCard Title="Suppliers" Value="@_supplierCount.ToString()"
+                  Color="#fb923c" IconBg="rgba(251,146,60,0.12)"
+                  Href="/suppliers" FillWidth="35">
+            <Icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </Icon>
+        </StatCard>
+
+    </div>
+
+    <!-- Recent Products Table -->
+    <div class="rounded-lg border overflow-hidden"
+         style="background:#0A0F3C; border-color:#1E2A78;">
+
+        <div class="flex items-center justify-between px-5 py-3 border-b"
+             style="border-color:#1E2A78;">
+            <h3 class="text-white font-semibold text-sm">Recent Products</h3>
+            <a href="/products" class="text-xs hover:underline" style="color:#53CBF3;">
+                View all →
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr style="background:#07104A;">
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Name</th>
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Category</th>
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Brand</th>
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Price</th>
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Stock</th>
+                        <th class="text-left px-5 py-3 font-semibold uppercase tracking-wider"
+                            style="color:#53CBF3;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!_recent.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="px-5 py-10 text-center" style="color:#6b7280;">
+                                No products yet.
+                                <a href="/products" style="color:#53CBF3;">Add one →</a>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var p in _recent)
+                        {
+                            <tr class="border-t transition-colors hover:bg-white/[0.03]"
+                                style="border-color:#1E2A78;">
+                                <td class="px-5 py-3 text-white font-medium">@p.Name</td>
+                                <td class="px-5 py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
+                                <td class="px-5 py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
+                                <td class="px-5 py-3 font-semibold" style="color:#53CBF3;">
+                                    ₱@p.Price.ToString("N2")
+                                </td>
+                                <td class="px-5 py-3 text-white">@p.Stock</td>
+                                <td class="px-5 py-3">
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                                          style="@(p.IsActive
+                                              ? "background:rgba(52,211,153,0.12);color:#34d399;"
+                                              : "background:rgba(239,68,68,0.12);color:#f87171;")">
+                                        @(p.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Product> _products = new();
+    private List<Product> _recent   = new();
+    private int _categoryCount, _brandCount, _supplierCount;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _products      = await ProductService.GetAllWithDetailsAsync();
+            _categoryCount = (await CategoryService.GetAllAsync()).Count;
+            _brandCount    = (await BrandService.GetAllAsync()).Count;
+            _supplierCount = (await SupplierService.GetAllAsync()).Count;
+            _recent        = _products.OrderByDescending(p => p.CreatedAt).Take(5).ToList();
+        }
+        finally { _loading = false; }
+    }
+}

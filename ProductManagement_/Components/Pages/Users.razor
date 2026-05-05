@@ -1,0 +1,269 @@
+﻿@* Components/Pages/Users.razor *@
+@page "/users"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+@inject IUserService UserService
+@using ProductManagement_.Components.Shared
+
+<PageTitle>Users — Product Management</PageTitle>
+
+<!-- Toolbar -->
+<div class="flex items-center justify-between mb-5">
+    <div class="flex items-center gap-3">
+        <p class="text-sm" style="color:#9ca3af;">System user management</p>
+        <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+              style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);">
+            🔒 Admin Only
+        </span>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="relative mb-5" style="max-width:300px;">
+    <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none" style="color:#53CBF3;">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+        </svg>
+    </span>
+    <input type="text"
+           value="@_search"
+           @oninput="e => { _search = e.Value?.ToString() ?? string.Empty; Filter(); }"
+           placeholder="Search users..."
+           class="w-full text-sm text-white rounded-md"
+           style="background:#0A0F3C;border:1px solid #1E2A78;padding:8px 12px 8px 32px;outline:none;" />
+</div>
+
+<!-- Table -->
+<div class="rounded-lg border overflow-hidden" style="background:#0A0F3C;border-color:#1E2A78;">
+    @if (_loading)
+    {
+        <div class="flex justify-center py-16">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2" style="border-color:#53CBF3;"></div>
+        </div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead>
+                    <tr style="background:#07104A;">
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">#</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Name</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Email</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Role</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Registered</th>
+                        <th class="text-left px-4 py-3 font-semibold uppercase tracking-wider" style="color:#53CBF3;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!_filtered.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="px-5 py-10 text-center" style="color:#6b7280;">
+                                No users found.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int i = 1;
+                        @foreach (var u in _filtered)
+                        {
+                            <tr class="border-t transition-colors hover:bg-white/[0.03]"
+                                style="border-color:#1E2A78;">
+                                <td class="px-4 py-3" style="color:#4b5563;">@(i++)</td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-7 h-7 rounded-full flex items-center justify-center
+                                                                font-bold text-xs flex-shrink-0"
+                                             style="background:#53CBF3;color:#04083A;">
+                                            @u.FirstName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <span class="text-white font-medium">@u.FirstName</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3" style="color:#9ca3af;">@u.Username</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 rounded-full font-semibold"
+                                          style="@(u.Role == Roles.Admin
+                                                                                        ? "background:rgba(167,139,250,0.12);color:#a78bfa;"
+                                                                                        : "background:rgba(83,203,243,0.12);color:#53CBF3;")">
+                                        @u.Role
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3" style="color:#4b5563;">
+                                    @u.CreatedAt.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex gap-2">
+                                        <button @onclick="() => OpenEditRole(u)"
+                                                class="px-2 py-1 rounded text-xs font-semibold border hover:bg-white/10"
+                                                style="border-color:#53CBF3;color:#53CBF3;background:transparent;cursor:pointer;">
+                                            Edit Role
+                                        </button>
+                                        <button @onclick="() => AskDelete(u.Id, u.FirstName)"
+                                                class="px-2 py-1 rounded text-xs font-semibold border hover:bg-red-900/20"
+                                                style="border-color:#f87171;color:#f87171;background:transparent;cursor:pointer;">
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="px-4 py-2 border-t text-xs" style="border-color:#1E2A78;color:#4b5563;">
+            @_filtered.Count of @_all.Count users
+        </div>
+    }
+</div>
+
+<!-- Edit Role Modal -->
+@if (_showModal)
+{
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+         style="background:rgba(0,0,0,0.75);">
+        <div class="w-full rounded-lg border shadow-2xl"
+             style="max-width:380px;background:#0A0F3C;border-color:#1E2A78;">
+
+            <div class="flex items-center justify-between px-5 py-4 border-b"
+                 style="border-color:#1E2A78;">
+                <h3 class="text-white font-semibold text-sm">Edit User Role</h3>
+                <button @onclick="CloseModal"
+                        style="color:#9ca3af;background:none;border:none;cursor:pointer;font-size:16px;">
+                    ✕
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4">
+                @if (!string.IsNullOrEmpty(_err))
+                {
+                    <div class="p-3 rounded-md text-xs"
+                         style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;">
+                        @_err
+                    </div>
+                }
+
+                <!-- User Info -->
+                <div class="flex items-center gap-3 p-3 rounded-md" style="background:#07104A;">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                         style="background:#53CBF3;color:#04083A;">
+                        @(_editingUser?.FirstName.Substring(0, 1).ToUpper() ?? "?")
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold text-xs">@_editingUser?.FirstName</p>
+                        <p class="text-xs" style="color:#6b7280;">@_editingUser?.Username</p>
+                    </div>
+                </div>
+
+                <!-- Role Select -->
+                <div>
+                    <label class="block text-xs font-medium mb-1" style="color:#9ca3af;">Role</label>
+                    <select @onchange="OnRoleChanged"
+                            class="w-full text-sm rounded-md px-3 py-2"
+                            style="background:#07104A;border:1px solid #1E2A78;color:white;outline:none;">
+                        <option value="@Roles.User"
+                                selected="@(_selectedRole == Roles.User)">
+                            User
+                        </option>
+                        <option value="@Roles.Admin"
+                                selected="@(_selectedRole == Roles.Admin)">
+                            Admin
+                        </option>
+                    </select>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button @onclick="CloseModal"
+                            class="flex-1 py-2 rounded-md text-xs border"
+                            style="border-color:#1E2A78;color:#9ca3af;background:transparent;cursor:pointer;">
+                        Cancel
+                    </button>
+                    <button @onclick="SaveRole" disabled="@_saving"
+                            class="flex-1 py-2 rounded-md text-xs font-bold disabled:opacity-50 hover:opacity-90"
+                            style="background:#53CBF3;color:#04083A;border:none;cursor:pointer;">
+                        @(_saving ? "Saving..." : "Update Role")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<ConfirmModal IsVisible="_showDelete"
+              Title="Delete User"
+              Message="@($"Permanently delete user \"{_deleteName}\"? This cannot be undone.")"
+              OnConfirm="ConfirmDelete"
+              OnCancel="@(() => _showDelete = false)" />
+
+@code {
+    private List<UserAccount> _all = new(), _filtered = new();
+    private bool _loading = true, _showModal = false,
+                  _saving = false, _showDelete = false;
+    private int _deleteId;
+    private string _deleteName = "", _search = "", _err = "";
+    private UserAccount? _editingUser;
+    private Roles _selectedRole = Roles.User;
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
+    {
+        _loading = true;
+        try { _all = await UserService.GetAllUsersAsync(); Filter(); }
+        finally { _loading = false; }
+    }
+
+    private void Filter() =>
+        _filtered = _all.Where(u =>
+            string.IsNullOrEmpty(_search) ||
+            u.FirstName.Contains(_search, StringComparison.OrdinalIgnoreCase) ||
+            u.Username.Contains(_search, StringComparison.OrdinalIgnoreCase))
+        .ToList();
+
+    private void OpenEditRole(UserAccount u)
+    {
+        _editingUser = u;
+        _selectedRole = u.Role;
+        _err = "";
+        _showModal = true;
+    }
+
+    private void OnRoleChanged(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<Roles>(e.Value?.ToString(), out var parsed))
+            _selectedRole = parsed;
+    }
+
+    private void CloseModal() { _showModal = false; _editingUser = null; _err = ""; }
+
+    private async Task SaveRole()
+    {
+        if (_editingUser is null) return;
+        _saving = true;
+        try
+        {
+            _editingUser.Role = _selectedRole;
+            await UserService.UpdateUserAsync(_editingUser);
+            CloseModal();
+            await Load();
+        }
+        catch (Exception ex) { _err = ex.Message; }
+        finally { _saving = false; }
+    }
+
+    private void AskDelete(int id, string name)
+    {
+        _deleteId = id; _deleteName = name; _showDelete = true;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        try { await UserService.DeleteUserAsync(_deleteId); await Load(); }
+        catch { }
+        finally { _showDelete = false; }
+    }
+}
