@@ -113,14 +113,14 @@ else
                         {
                             <tr class="border-t transition-colors hover:bg-white/[0.03]"
                                 style="border-color:#1E2A78;">
-                                <td class="px-5 py-3 text-white font-medium">@p.Name</td>
-                                <td class="px-5 py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
-                                <td class="px-5 py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
-                                <td class="px-5 py-3 font-semibold" style="color:#53CBF3;">
+                                <td class="px-5 text-md  py-3 text-white font-medium">@p.Name</td>
+                                <td class="px-5 text-md  py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
+                                <td class="px-5 text-md  py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
+                                <td class="px-5 text-md  py-3 font-semibold" style="color:#53CBF3;">
                                     ₱@p.Price.ToString("N2")
                                 </td>
-                                <td class="px-5 py-3 text-white">@p.Stock</td>
-                                <td class="px-5 py-3">
+                                <td class="px-5 text-md  py-3 text-white">@p.Stock</td>
+                                <td class="px-5 text-md  py-3">
                                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
                                           style="@(p.IsActive
                                               ? "background:rgba(52,211,153,0.12);color:#34d399;"

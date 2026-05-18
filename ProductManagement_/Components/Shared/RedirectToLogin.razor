@@ -1,0 +1,17 @@
+﻿@inject NavigationManager Navigation
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthState { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+
+        // ✅ Only redirect if genuinely not authenticated
+        if (state.User.Identity?.IsAuthenticated != true)
+        {
+            var returnUrl = Uri.EscapeDataString(Navigation.Uri);
+            Navigation.NavigateTo($"/login", forceLoad: false);
+        }
+    }
+}

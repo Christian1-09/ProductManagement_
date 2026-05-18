@@ -14,10 +14,24 @@
         <!-- Brand Logo -->
         <div class="flex flex-col items-center py-7 border-b" style="border-color:#1E2A78;">
             <div class="relative flex items-center justify-center mb-3" style="width:52px;height:52px;">
-                <svg viewBox="0 0 100 115" style="width:100%;height:100%;fill:#53CBF3;">
-                    <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" />
+                <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" width="66px" height="66">
+                    <polygon points="50,8 86,29 86,30 50,51 14,30 14,29"
+                             fill="#29B6F6" opacity="0.25" />
+                    <polygon points="14,30 50,51 50,93 14,72"
+                             fill="#29B6F6" opacity="0.35" />
+                    <polygon points="50,51 86,30 86,72 50,93"
+                             fill="#29B6F6" opacity="0.20" />
+                    <polygon points="50,8 86,29 86,72 50,93 14,72 14,29"
+                             fill="none" stroke="#29B6F6" stroke-width="2.2" />
+                    <line x1="50" y1="8" x2="50" y2="51" stroke="#29B6F6" stroke-width="1.6" />
+                    <line x1="14" y1="29" x2="50" y2="51" stroke="#29B6F6" stroke-width="1.6" />
+                    <line x1="86" y1="29" x2="50" y2="51" stroke="#29B6F6" stroke-width="1.6" />
+                    <line x1="50" y1="51" x2="50" y2="93" stroke="#29B6F6" stroke-width="1.6" />
+                    <line x1="14" y1="46" x2="50" y2="67" stroke="#29B6F6" stroke-width="1.2" opacity="0.7" />
+                    <line x1="14" y1="61" x2="50" y2="82" stroke="#29B6F6" stroke-width="1.2" opacity="0.7" />
+                    <line x1="50" y1="67" x2="86" y2="46" stroke="#29B6F6" stroke-width="1.2" opacity="0.7" />
+                    <line x1="50" y1="82" x2="86" y2="61" stroke="#29B6F6" stroke-width="1.2" opacity="0.7" />
                 </svg>
-                <span class="absolute font-bold" style="font-size:22px;color:#04083A;font-family:serif;">E</span>
             </div>
             <span class="font-semibold text-white tracking-widest uppercase text-xs" style="font-family:serif;">
                 Product Management
@@ -49,10 +63,10 @@
 
             <NavLink href="/"
                      Match="NavLinkMatch.All"
-                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     class="flex items-center gap-3 px-3 py-2  rounded-md text-lg font-medium transition-all"
                      style="color:#9ca3af;border-left:3px solid transparent;"
                      ActiveClass="nav-link-active">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
@@ -60,10 +74,10 @@
             </NavLink>
 
             <NavLink href="/products"
-                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-lg font-medium transition-all"
                      style="color:#9ca3af;border-left:3px solid transparent;"
                      ActiveClass="nav-link-active">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
@@ -71,10 +85,10 @@
             </NavLink>
 
             <NavLink href="/categories"
-                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-lg font-medium transition-all"
                      style="color:#9ca3af;border-left:3px solid transparent;"
                      ActiveClass="nav-link-active">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
@@ -82,10 +96,10 @@
             </NavLink>
 
             <NavLink href="/brands"
-                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-lg font-medium transition-all"
                      style="color:#9ca3af;border-left:3px solid transparent;"
                      ActiveClass="nav-link-active">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                 </svg>
@@ -93,10 +107,10 @@
             </NavLink>
 
             <NavLink href="/suppliers"
-                     class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                     class="flex items-center gap-3 px-3 py-2 rounded-md text-lg font-medium transition-all"
                      style="color:#9ca3af;border-left:3px solid transparent;"
                      ActiveClass="nav-link-active">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
@@ -112,10 +126,10 @@
                         </p>
                     </div>
                     <NavLink href="/users"
-                             class="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all"
+                             class="flex items-center gap-3 px-3 py-2 rounded-md text-lg font-medium transition-all"
                              style="color:#9ca3af;border-left:3px solid transparent;"
                              ActiveClass="nav-link-active">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
@@ -147,7 +161,7 @@
         <header class="flex items-center justify-between px-6 py-3 flex-shrink-0 border-b"
                 style="background:#0A0F3C; border-color:#1E2A78; min-height:60px;">
             <div>
-                <h2 class="text-white font-semibold text-base">@GetPageTitle()</h2>
+                <h2 class="text-white font-semibold text-lg text-base">@GetPageTitle()</h2>
                 <p class="text-xs" style="color:#53CBF3;">@DateTime.Now.ToString("dddd, MMMM dd yyyy")</p>
             </div>
             <AuthorizeView>

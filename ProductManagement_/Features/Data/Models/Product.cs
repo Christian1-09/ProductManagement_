@@ -27,7 +27,7 @@ namespace ProductManagement_.Features.Data.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
 
-        // Foreign Keys
+        // Foreign Keys (Link to other tables)
         public int CategoryId { get; set; }
         public int BrandId { get; set; }
         public int SupplierId { get; set; }

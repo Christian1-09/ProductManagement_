@@ -13,7 +13,7 @@
 
 <!-- Toolbar -->
 <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-    <p class="text-sm" style="color:#9ca3af;">Manage your product inventory</p>
+    <p class="text-2xl" style="color:#9ca3af;">Manage your product inventory</p>
     <AuthorizeView Roles="Admin">
         <Authorized Context="adminCtx">
             <button @onclick="OpenAdd"
@@ -94,14 +94,14 @@
                         @foreach (var p in _filtered)
                         {
                             <tr class="border-t transition-colors hover:bg-white/[0.03]" style="border-color:#1E2A78;">
-                                <td class="px-4 py-3 text-white font-medium">@p.Name</td>
-                                <td class="px-4 py-3" style="color:#6b7280;">@(p.SKU ?? "—")</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(p.Supplier?.Name ?? "—")</td>
-                                <td class="px-4 py-3 font-semibold" style="color:#53CBF3;">₱@p.Price.ToString("N2")</td>
-                                <td class="px-4 py-3 text-white">@p.Stock</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 text-md  py-3 text-white font-medium">@p.Name</td>
+                                <td class="px-4 text-md  py-3" style="color:#6b7280;">@(p.SKU ?? "—")</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(p.Category?.Name ?? "—")</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(p.Brand?.Name ?? "—")</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(p.Supplier?.Name ?? "—")</td>
+                                <td class="px-4 text-md  py-3 font-semibold" style="color:#53CBF3;">₱@p.Price.ToString("N2")</td>
+                                <td class="px-4 text-md  py-3 text-white">@p.Stock</td>
+                                <td class="px-4 text-md  py-3">
                                     <span class="px-2 py-0.5 rounded-full font-semibold"
                                           style="@(p.IsActive ? "background:rgba(52,211,153,0.12);color:#34d399;" : "background:rgba(239,68,68,0.12);color:#f87171;")">
                                         @(p.IsActive ? "Active" : "Inactive")
@@ -112,12 +112,12 @@
                                         <td class="px-4 py-3">
                                             <div class="flex gap-2">
                                                 <button @onclick="() => OpenEdit(p)"
-                                                        class="px-2 py-1 rounded text-xs font-semibold border transition-all hover:bg-white/10"
+                                                        class="px-2 py-1 rounded text-md font-semibold border transition-all hover:bg-white/10"
                                                         style="border-color:#53CBF3;color:#53CBF3;background:transparent;cursor:pointer;">
                                                     Edit
                                                 </button>
                                                 <button @onclick="() => AskDelete(p.Id, p.Name)"
-                                                        class="px-2 py-1 rounded text-xs font-semibold border transition-all hover:bg-red-900/20"
+                                                        class="px-2 py-1 rounded text-md font-semibold border transition-all hover:bg-red-900/20"
                                                         style="border-color:#f87171;color:#f87171;background:transparent;cursor:pointer;">
                                                     Delete
                                                 </button>

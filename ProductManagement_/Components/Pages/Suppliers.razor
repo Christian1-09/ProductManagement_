@@ -9,7 +9,7 @@
 
 <!-- Toolbar -->
 <div class="flex items-center justify-between mb-5">
-    <p class="text-sm" style="color:#9ca3af;">Manage product suppliers</p>
+    <p class="text-2xl font-bold" style="color:#9ca3af;">Manage product suppliers</p>
     <AuthorizeView Roles="Admin">
         <Authorized Context="a">
             <button @onclick="OpenAdd"
@@ -83,12 +83,12 @@
                         {
                             <tr class="border-t transition-colors hover:bg-white/[0.03]"
                                 style="border-color:#1E2A78;">
-                                <td class="px-4 py-3" style="color:#4b5563;">@(i++)</td>
-                                <td class="px-4 py-3 text-white font-medium">@s.Name</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(s.ContactPerson ?? "—")</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(s.ContactEmail ?? "—")</td>
-                                <td class="px-4 py-3" style="color:#9ca3af;">@(s.Phone ?? "—")</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 text-md  py-3" style="color:#4b5563;">@(i++)</td>
+                                <td class="px-4 text-md  py-3 text-white font-medium">@s.Name</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(s.ContactPerson ?? "—")</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(s.ContactEmail ?? "—")</td>
+                                <td class="px-4 text-md  py-3" style="color:#9ca3af;">@(s.Phone ?? "—")</td>
+                                <td class="px-4 text-md  py-3">
                                     <span class="px-2 py-0.5 rounded-full font-semibold"
                                           style="@(s.IsActive
                                                                                         ? "background:rgba(52,211,153,0.12);color:#34d399;"
@@ -98,15 +98,15 @@
                                 </td>
                                 <AuthorizeView Roles="Admin">
                                     <Authorized Context="r">
-                                        <td class="px-4 py-3">
+                                        <td class="px-4 text-md  py-3">
                                             <div class="flex gap-2">
                                                 <button @onclick="() => OpenEdit(s)"
-                                                        class="px-2 py-1 rounded text-xs font-semibold border hover:bg-white/10"
+                                                        class="px-2 py-1 rounded text-md font-semibold border hover:bg-white/10"
                                                         style="border-color:#53CBF3;color:#53CBF3;background:transparent;cursor:pointer;">
                                                     Edit
                                                 </button>
                                                 <button @onclick="() => AskDelete(s.Id, s.Name)"
-                                                        class="px-2 py-1 rounded text-xs font-semibold border hover:bg-red-900/20"
+                                                        class="px-2 py-1 rounded text-md font-semibold border hover:bg-red-900/20"
                                                         style="border-color:#f87171;color:#f87171;background:transparent;cursor:pointer;">
                                                     Delete
                                                 </button>
